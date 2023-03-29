@@ -1,7 +1,17 @@
 import discord
 import asyncpraw
 import aiohttp
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 session = aiohttp.ClientSession()
+
+bot_token = os.getenv('bot_token')
+reddit_client_id = os.getenv('reddit_client_id')
+reddit_client_secret = os.getenv('reddit_client_secret')
+reddit_user_agent = os.getenv('reddit_user_agent')
+discord_channel_id = int(os.getenv('discord_channel_id'))
 
 #Create a Reddit instance and give it client id, secret, and user agent, all found on Reddit's apps page
 
@@ -11,12 +21,12 @@ intents.message_content = True
 client = discord.Client(intents = intents) #instance of a Discord Client
 
 async def send_post(post): #this function sends a post to the channel
-    channel = client.get_channel(1089153330665754657)
+    channel = client.get_channel(discord_channel_id)
     reddit_thread = f"{post.title}\n{post.url}"
     await channel.send(reddit_thread)
 
 async def check_for_deskmats(): #this function checks every new post for the word "deskmat"
-    reddit = asyncpraw.Reddit(client_id='HLSxhMlDURQwlw', client_secret='9ESGBsNW6-IElJ9A7JzN-RN7NAFsiA', user_agent='DeskmatBot')
+    reddit = asyncpraw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent=reddit_user_agent)
     mech_posts = await reddit.subreddit('mechmarket')
     async for post in mech_posts.stream.submissions():
         if "deskmat" in (post.title + post.selftext).lower():
@@ -29,7 +39,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message): #async functions that wait for a message from a user
-    reddit = asyncpraw.Reddit(client_id='HLSxhMlDURQwlw', client_secret='9ESGBsNW6-IElJ9A7JzN-RN7NAFsiA', user_agent='DeskmatBot')
+    reddit = asyncpraw.Reddit(client_id=reddit_client_id, client_secret=reddit_client_secret, user_agent=reddit_user_agent)
     mech_posts = await reddit.subreddit('mechmarket')
 
     if message.author == client.user:
@@ -44,4 +54,4 @@ async def on_message(message): #async functions that wait for a message from a u
         await reddit.close()
 
 
-client.run('ODU3NDU4NDQ0NTU4NjYzNzAw.G6lDLN.5hvK50dChNSP5njH4i50Rfkz0mwl9jAf5hspYE')
+client.run(bot_token)
