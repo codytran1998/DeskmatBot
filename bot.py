@@ -30,7 +30,7 @@ async def check_for_deskmats(): #Main function. This function checks every new p
     async for post in mech_posts.stream.submissions(): #for every new post in the subreddit's "stream"
         #https://asyncpraw.readthedocs.io/en/stable/code_overview/other/subredditstream.html
         if "deskmat" in (post.title + post.selftext).lower(): #check for "deskmat" in title + body
-            await send_post(post) #calls send_post to send a message when deskmat is found
+            await send_post(post) #calls send_post() to send a message when deskmat is found
 
 @client.event #Registers an event within Discord
 async def on_ready():
